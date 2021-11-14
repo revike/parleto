@@ -8,22 +8,36 @@ from django.db.models.functions import Coalesce
 def summary_per_category(queryset):
     return OrderedDict(sorted(
         queryset
-        .annotate(category_name=Coalesce('category__name', Value('-')))
-        .order_by()
-        .values('category_name')
-        .annotate(s=Sum('amount'))
-        .values_list('category_name', 's')
+            .annotate(category_name=Coalesce('category__name', Value('-')))
+            .order_by()
+            .values('category_name')
+            .annotate(s=Sum('amount'))
+            .values_list('category_name', 's')
     ))
 
 
 def summary_per_year_month(queryset):
     return OrderedDict(sorted(
         queryset
-        .annotate(
+            .annotate(
             year_month=TruncMonth('date'),
         )
-        .order_by()
-        .values('year_month')
-        .annotate(sum=Sum('amount'))
-        .values_list('year_month', 'sum')
+            .order_by()
+            .values('year_month')
+            .annotate(sum=Sum('amount'))
+            .values_list('year_month', 'sum')
     ))
+
+
+def total_amount(queryset):
+    return OrderedDict(
+        queryset.aggregate(Sum('amount'))
+    )
+
+
+def total_for_categories(categories, queryset):
+    result = {}
+    for category in categories:
+        result[category] = OrderedDict(
+            queryset.filter(category=category).aggregate(Sum('amount')))
+    return result

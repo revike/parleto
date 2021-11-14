@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <table border="1">
+        <thead>
+        <tr>
+            <th>category</th>
+            <th>expense</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for k, v in expenses.items %}
+            <tr>
+                <td>
+                    {{ k }}
+                    {% for _, val in v.items %}</td>
+                        <td>
+                            {{ val|floatformat:2 }}
+                        </td>
+                        <td><a href="{% url 'expenses:category_update' k.id %}">edit</a></td>
+                        <td><a href="{% url 'expenses:category_delete' k.id %}">delete</a></td>
+                        </tr>
+                    {% endfor %}
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    <a href="{% url 'expenses:expense-list' %}">На главную</a>
+{% endblock %}
